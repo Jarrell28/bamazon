@@ -51,3 +51,29 @@ function choices() {
         }
     })
 }
+
+function showProducts() {
+
+    // console.log("connected as id " + connection.threadId + "\n");
+
+    var query = connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+
+        // console.log(res);
+        console.log("Here are the available items:");
+        res.forEach(item => console.log("Id: " + item.item_id + " | Product: " + item.product_name + " | Price: $" + item.price + " | Quantity: " + item.stock_quantity));
+
+        choices();
+    })
+}
+
+function lowInventory() {
+    var query = connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, res) {
+        if (err) throw err;
+
+        res.forEach(item => console.log("Id: " + item.item_id + " | Product: " + item.product_name + " | Price: $" + item.price + " | Quantity: " + item.stock_quantity));
+
+        choices();
+
+    })
+}
