@@ -55,3 +55,43 @@ function showProducts() {
     })
 
 }
+
+
+function purchaseProduct(id, quantity) {
+    var query = connection.query("SELECT * FROM products WHERE item_id = " + id,
+        function (err, res) {
+            if (err) throw err;
+
+            if (res.length <= 0) {
+                console.log("Please enter a valid ID!");
+                buyItem();
+            } else if (res[0].stock_quantity < quantity) {
+                console.log("We only have " + res[0].stock_quantity + " in stock.")
+            } else {
+                var newQuantity = res[0].stock_quantity - quantity;
+                updateProduct(id, newQuantity);
+                console.log("Total Price: $" + (res[0].price * quantity));
+            }
+        }
+    )
+}
+
+function updateProduct(id, quantity) {
+    var query = connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: quantity
+            },
+            {
+                item_id: id
+            }
+
+        ],
+        function (err, res) {
+            if (err) throw err;
+            console.log("Purchase has been completed. ")
+
+        }
+    );
+}
