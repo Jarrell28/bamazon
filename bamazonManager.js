@@ -77,3 +77,80 @@ function lowInventory() {
 
     })
 }
+
+function addToInventory() {
+    var query = connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+
+        // console.log(res);
+        console.log("Here are the available items:");
+        res.forEach(item => console.log("Id: " + item.item_id + " | Product: " + item.product_name + " | Price: $" + item.price + " | Quantity: " + item.stock_quantity));
+
+
+
+        inquirer.prompt([
+            {
+                name: "product",
+                type: "input",
+                message: "Select ID of product"
+            },
+            {
+                name: "quantity",
+                type: "input",
+                message: "Enter new quantity"
+            }
+        ]).then(function (input) {
+            var id = parseInt(input.product);
+            var quantity = parseInt(input.quantity);
+
+            var query2 = connection.query("UPDATE products SET ? WHERE ?", [
+                {
+                    stock_quantity: quantity
+                },
+                {
+                    item_id: id
+                }
+            ], function (err, res) {
+                if (err) throw err;
+                console.log("Updated Product Quantity");
+                choices();
+            })
+        })
+    })
+
+}
+
+function newProduct() {
+    inquirer.prompt([
+        {
+            name: "name",
+            type: "input",
+            message: "Enter name of product"
+        },
+        {
+            name: "department",
+            type: "input",
+            message: "Enter Department"
+        },
+        {
+            name: "price",
+            type: "input",
+            message: "Enter Price"
+        },
+        {
+            name: "quantity",
+            type: "input",
+            message: "Enter Quantity"
+        }
+    ]).then(function (product) {
+        var price = parseInt(product.price);
+        var quantity = parseInt(product.quantity);
+        var product = { product_name: product.name, department_name: product.department, price, stock_quantity: quantity };
+        var query = connection.query("INSERT INTO products SET ?", product, function (err, res) {
+            if (err) throw err;
+
+            console.log("Product Added");
+            choices();
+        })
+    })
+}
